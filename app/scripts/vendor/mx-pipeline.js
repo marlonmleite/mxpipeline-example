@@ -1,6 +1,6 @@
 angular.module('mxPipeline.templates', []).run(['$templateCache', function($templateCache) {
   $templateCache.put("template/mxpipeline.tpl.html",
-    "<div class=mx-pipeline><table class=mx-stage><tbody><tr height=45><td><div class=mx-header><ul><li id=\"stage-{{ column[mxFieldColumnKey] }}\" ng-repeat=\"column in mxDataProvider\"><span class=mx-name>{{ column[\"name\"] }}</span> <span class=mx-stage-value><span class=mx-value>{{ vm.sumValues(column[mxFieldChildren]) | currency:'R$ ' }} <small>{{ column[mxFieldChildren] | countItem:true }}</small></span></span></li></ul></div></td></tr><tr><td><div class=mx-container><table class=mx-table-content><tbody><tr><td class=mx-stage-item ng-repeat=\"column in mxDataProvider\"><ul id=\"{{ column[mxFieldColumnKey] }}\" mx-droppable><li id=\"mx-pipeline-key-{{ item[mxFieldChildKey] }}\" mx-id=\"{{ item[mxFieldChildKey] }}\" class=item ng-repeat=\"item in column[mxFieldChildren]\" mx-draggable><div class=mx-card><a href=\"\" class=mx-click-card draggable=false><strong><img ng-src=\"{{ item[mxFieldChildIcon] === undefined ? 'images/profile_120x120.jpg' : item[mxFieldChildIcon] }}\" alt=\"{{ item[mxFieldChildName] }}\" class=mx-profile-icon> {{ item[mxFieldChildName] }}</strong> <small><span class=detail>{{ item[mxFieldChildValue] | currency:'R$ ' }}</span> <span class=detail>{{ item[mxFieldChildPartner] }}</span></small></a></div><div class=mx-icon-card draggable=false ng-class=\"{'state-0': item[mxFieldChildState] == '0', 'state-1': item[mxFieldChildState] == 1, 'state-2': item[mxFieldChildState] == 2, 'state-3': item[mxFieldChildState] == 3, 'state-4': item[mxFieldChildState] == 4}\"><a id=activity-item-click href=\"\" class=icon ng-click=\"vm.stateClickHandler($event, item[mxFieldChildKey])\"></a></div></li></ul></td></tr></tbody></table></div></td></tr></tbody></table></div>");
+    "<div class=mx-pipeline><table class=mx-stage><tbody><tr height=45><td><div class=mx-header><ul><li id=\"stage-{{ column[mxFieldColumnKey] }}\" ng-repeat=\"column in mxDataProvider\"><span class=mx-name>{{ column[\"name\"] }}</span> <span class=mx-stage-value><span class=mx-value>{{ vm.sumValues(column[mxFieldChildren]) | currency:'R$ ' }} <small>{{ column[mxFieldChildren] | countItem:true }}</small></span></span></li></ul></div></td></tr><tr><td><div class=mx-container><table class=mx-table-content><tbody><tr><td class=mx-stage-item ng-repeat=\"column in mxDataProvider\"><ul id=\"{{ column[mxFieldColumnKey] }}\" mx-droppable><li id=\"mx-pipeline-key-{{ item[mxFieldChildKey] }}\" mx-id=\"{{ item[mxFieldChildKey] }}\" class=item ng-repeat=\"item in column[mxFieldChildren]\" mx-draggable><div class=mx-card><a href=\"\" class=mx-click-card draggable=false><strong><img ng-src=\"{{ item[mxFieldChildIcon] === undefined ? 'img/profile_120x120.jpg' : item[mxFieldChildIcon] }}\" alt=\"{{ item[mxFieldChildName] }}\" class=mx-profile-icon> {{ item[mxFieldChildName] }}</strong> <small><span class=detail>{{ item[mxFieldChildValue] | currency:'R$ ' }}</span> <span class=detail>{{ item[mxFieldChildPartner] }}</span></small></a></div><div class=mx-icon-card draggable=false ng-class=\"{'state-0': item[mxFieldChildState] == '0', 'state-1': item[mxFieldChildState] == 1, 'state-2': item[mxFieldChildState] == 2, 'state-3': item[mxFieldChildState] == 3, 'state-4': item[mxFieldChildState] == 4}\"><a id=activity-item-click href=\"\" class=icon ng-click=\"vm.stateClickHandler($event, item[mxFieldChildKey])\"></a></div></li></ul></td></tr></tbody></table><div id=mx-stage-actions><ul class=mx-stage-action><li class=mx-trash mx-droppable-action mx-droppable-type=trash><span></span></li><li class=mx-lose mx-droppable-action mx-droppable-type=lose><span>Perdido</span></li><li class=mx-win mx-droppable-action mx-droppable-type=win><span>Ganho</span></li></ul></div></div></td></tr></tbody></table></div>");
 }]);
 
 /**
@@ -11,15 +11,7 @@ angular.module('mxPipeline.templates', []).run(['$templateCache', function($temp
  *
  * Main module of the application.
  */
-angular
-  .module('mxPipeline', [
-    'ngAnimate',
-    'ngResource',
-    'ngSanitize',
-    'ngTouch',
-    'mxPipeline.templates'
-  ]);
-
+angular.module('mxPipeline', ['mxPipeline.templates']);
 /**
  * @ngdoc filter
  * @name mxPipeline.filter:countItem
@@ -85,34 +77,55 @@ angular.module('mxPipeline')
    		var currentData;
    		var toData;
 
-		dataProvider.forEach(function(record, index){
-      		if (record[fieldColumnId] === fromStageId) {
+	    dataProvider.forEach(function(record, index){
+    		if (record[fieldColumnId] === fromStageId) {
 
-      			if (angular.isDefined(record[fieldColumnChildren])) {
-          			record[fieldColumnChildren].forEach(function(child, index){
-          				if (child[fieldChildId] === childId) {
-          					indexRemove = index;
+    			if (angular.isDefined(record[fieldColumnChildren])) {
+        			record[fieldColumnChildren].forEach(function(child, index){
+        				if (child[fieldChildId] === childId) {
+        					indexRemove = index;
 
-          					currentData = child;
-          				}
-          			});
+        					currentData = child;
+        				}
+        			});
 
-          			if (angular.isDefined(indexRemove)) {
-          				record[fieldColumnChildren].splice(indexRemove, 1);
-          			}
-      			}
-      		} else if (record[fieldColumnId] === toStageId) {
-				toData = record;
-      		}
-      	});
+        			if (angular.isDefined(indexRemove)) {
+        				record[fieldColumnChildren].splice(indexRemove, 1);
+        			}
+    			}
+    		} else if (record[fieldColumnId] === toStageId) {
+			    toData = record;
+    		}
+    	});
 
-      	if (angular.isDefined(toData)) {
-      		if (!angular.isDefined(toData[fieldColumnChildren])) {
-      			toData[fieldColumnChildren] = [];
-      		}
+    	if (angular.isDefined(toData)) {
+    		if (!angular.isDefined(toData[fieldColumnChildren])) {
+    			toData[fieldColumnChildren] = [];
+    		}
 
-      		toData[fieldColumnChildren].push(currentData);
-      	}
+    		toData[fieldColumnChildren].push(currentData);
+    	}
+    };
+
+    vm.removeRecord = function moveRecord(fromStageId, childId) {
+      var indexRemove;
+
+      dataProvider.forEach(function(record, index){
+        if (record[fieldColumnId] === fromStageId) {
+
+          if (angular.isDefined(record[fieldColumnChildren])) {
+              record[fieldColumnChildren].forEach(function(child, index){
+                if (child[fieldChildId] === childId) {
+                  indexRemove = index;
+                }
+              });
+
+              if (angular.isDefined(indexRemove)) {
+                record[fieldColumnChildren].splice(indexRemove, 1);
+              }
+          }
+        }
+      });
     };
   });
 
@@ -178,9 +191,12 @@ angular.module('mxPipeline')
  * # mxDroppable
  */
 angular.module('mxPipeline')
-  .directive('mxDroppable', ['DataProvider', function (DataProvider) {
+  .directive('mxDroppableAction', ['DataProvider', function (DataProvider) {
     return {
       require: '^mxPipeline',
+      scope: {
+      	mxDroppableType: '@mxDroppableType'
+      },
       restrict: 'A',
       link: function postLink(scope, element, attrs, controller) {
         var elem = element[0];
@@ -224,15 +240,110 @@ angular.module('mxPipeline')
         elem.addEventListener(
           'drop', 
           function(e) {
+          	var fromParent = document.getElementById(e.dataTransfer.getData('parentId'));
+			var itemDrop = document.getElementById(e.dataTransfer.getData('elementId'));
+      		var itemId = angular.element(itemDrop).attr('mx-id');
+      		var fromParentId = e.dataTransfer.getData('parentId');
+
+            this.classList.remove('over');
+            this.classList.remove('open');
+
+      		if (e.stopPropagation) {
+          		e.stopPropagation();
+          	}
+
+          	fromParent.removeChild(itemDrop);
+
+          	DataProvider.removeRecord(fromParentId, itemId);
+
+          	console.log(DataProvider.get());
+
+          	//controller.onDropHandler(itemId);
+
+          	return false;
+          },
+          false
+        );
+      }
+    };
+  }]);
+
+/**
+ * @ngdoc directive
+ * @name mxPipeline.directive:mxDroppable
+ * @description
+ * # mxDroppable
+ */
+angular.module('mxPipeline')
+  .directive('mxDroppable', ['DataProvider', function (DataProvider) {
+    return {
+      require: '^mxPipeline',
+      restrict: 'A',
+      link: function postLink(scope, element, attrs, controller) {
+        var elem = element[0];
+        var stageAction;
+
+        elem.addEventListener(
+          'dragover', 
+          function(e) {
+          	e.dataTransfer.dropEffect = 'move';
+
+          	if (e.preventDefault) {
+          		e.preventDefault();
+          	}
+
+            stageAction = document.getElementById('mx-stage-actions');
+
+            angular.element(stageAction).addClass('open');
+
+          	this.classList.add('over');
+
+
+          	return false;
+          },
+          false
+        );
+
+        elem.addEventListener(
+          'dragenter', 
+          function(e) {
+          	this.classList.add('over');
+          	
+          	return false;
+          },
+          false
+        );
+
+        elem.addEventListener(
+          'dragleave', 
+          function(e) {
+          	this.classList.remove('over');
+          	
+          	return false;
+          },
+          false
+        );
+
+        elem.addEventListener(
+          'drop', 
+          function(e) {
           	var fromParentId = e.dataTransfer.getData('parentId');
       			var itemDrop = document.getElementById(e.dataTransfer.getData('elementId'));
       			var itemId = angular.element(itemDrop).attr('mx-id');
+            var stageAction = document.getElementById('mx-stage-actions');
+
+            this.classList.remove('over');
+
+            angular.element(stageAction).removeClass('open');
+
+            if (this.id == fromParentId) {
+              return;
+            }
 
       			if (e.stopPropagation) {
           		e.stopPropagation();
           	}
 
-          	this.classList.remove('over');
           	this.appendChild(itemDrop);
 
           	DataProvider.moveRecord(fromParentId, this.id, itemId);
@@ -286,8 +397,8 @@ angular.module('mxPipeline')
  * @description
  * # mxPipeline
  */
-angular.module('mxpipeline')
-  .controller('Pipeline', ['$scope, $timeout, $log, DataProvider', function($scope, $timeout, $log, DataProvider){
+angular.module('mxPipeline')
+  .controller('Pipeline', ['$scope', '$timeout', '$log', 'DataProvider', function($scope, $timeout, $log, DataProvider){
     var vm = this;
     vm.mxFieldColumnKey = $scope.mxFieldColumnKey;
     vm.mxFieldColumnName = $scope.mxFieldColumnName;

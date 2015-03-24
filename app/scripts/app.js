@@ -9,7 +9,7 @@
  * Main module of the application.
  */
 angular
-  .module('mxPipelineApp', ['mxPipeline'])
+  .module('mxPipelineApp', ['ngAnimate','ngResource','ngSanitize','ngTouch','ngRoute','mxPipeline',])
   .config(function ($routeProvider) {
     $routeProvider
       .when('/', {
